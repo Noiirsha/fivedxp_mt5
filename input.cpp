@@ -273,11 +273,10 @@ bool loadKeybinds() {
 }
 
 void init_input() {
-    if (isMt4) {
-        enableHook(initWindow, 0x89B8680);
-    } else {
-        enableHook(initWindow, 0xa824460);
-    }
+
+    // @Function int NU::System::RenderContextCurrent::CreateDevice(NU::System::RenderContextCurrent *this)
+    enableHook(initWindow, 0x8CEFC80);
+    
 
     SDL_SetMainReady();
 

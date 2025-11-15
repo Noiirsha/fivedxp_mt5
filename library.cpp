@@ -361,7 +361,8 @@ defineHook(int, isTerminal)
 
 defineHook(int, isTerminalMt4, int* a1)
 {
-    a1[1] = 0x841B840;
+    // @Function bool Mode::StartUp::state_TerminalIoCoinCheckWait(Mode::StartUp *const this)
+    a1[1] = 0x84819F0;
     return 0;
 }
 
@@ -613,70 +614,45 @@ void initialize_wlldr() {
         printf("limiter\n");
     }
 
-    if (isMt4) {
-        patchMemoryString0((void*)0x8c11004, "mucha.local");
+    // Sym_aV388FrontMucha
+    patchMemoryString0((void*)0x8FA2FA8, "mucha.local");
 
-        enableHook(logmt4, 0x809ddb0);
+    // @Function void Sys::LogMes(nuUINT32 iType, const char *format, ...)
+    enableHook(logmt4, 0x80A18C0);
 
-       if (isTerminal)
-           enableHook(isTerminalMt4, 0x841BF00);
+    if (isTerminal)
+        // @Function bool Mode::StartUp::state_TerminalIoCheckWait(Mode::StartUp *const this)
+        enableHook(isTerminalMt4, 0x84828E0);
 
-        // content router fix
-        enableHook(refreshNetwork, 0x821D4F0);
+    // content router fix
+    // @Function bool Sys::Net::Interface::update(Sys::Net::Interface *const this)
+    enableHook(refreshNetwork, 0x821D4F0);
 
-        patchMemory((void*)0x80a0920, { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
+    // im not very sure about this function... maybe prevent it call the error handling branch?
+    // @Function void Sys::Network::Impl::updateInterface(Sys::Network::Impl *const this)
+    // @ASM mov dword ptr [edi+6Ch], offset _ZZN3Sys3Net5Error18GetNetworkCategoryEvE8instance
+    // @AS Function Sys::Net::Error::GetNetworkCategory(void)::instance
+    patchMemory((void*)0x80A4BD1, { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
 
-        enableHook(sendAlthmand, 0x89E5C80);
+    // @Function int send_command@<eax>(int a1@<eax>, int a2@<edx>, int a3@<ecx>, int a4, char *src)
+    enableHook(sendAlthmand, 0x8D2A2E0);
 
-        // fix resolution
-        enableHook(XGetWindowAttributes, XGetWindowAttributes);
+    // fix resolution
+    enableHook(XGetWindowAttributes, XGetWindowAttributes);
 
-        enableHook(XOpenDisplay, 0x8057d28);
+    // @Function Display *XOpenDisplay(const char *a1)
+    enableHook(XOpenDisplay, 0x8058390);
 
-        enableHook(FFBIo_State_PowerOn, 0x8369CD0);
-        enableHook(FFBIo_State_PowerOff, 0x8369BB0);
+    // @Function bool Sys::Device::FFBIo::State_PowerOn(Sys::Device::FFBIo *const this)
+    enableHook(FFBIo_State_PowerOn, 0x83B8BD0);
+    // @Function bool Sys::Device::FFBIo::State_PowerOff(Sys::Device::FFBIo *const this)
+    enableHook(FFBIo_State_PowerOff, 0x83B8AB0);
 
-        enableHook(open, 0x8057d08);
-        enableHook(glTexParameteri, 0x8059228);
-    } else {
-        patchMemoryString0((void*)0xaafaa88, "mucha.local");
-        //patchMemory((void*)0x81de9fc, { 0x66, 0xc7, 0x85, 0x62, 0xfe, 0xff, 0xff, 0xBB, 0x01 }); // port 443 mucha patch
-        enableHook(decryptToken, 0xAA77780);
-
-        enableHook(log, 0x80bc980);
-        enableHook(log, 0x80bca60);
-        enableHook(log, 0x80bcb40);
-
-        // content router
-        enableHook(getContentRouter, 0x82519d0);
-        patchMemory((void*)0x827f7e3, { 0x0f, 0x85 });
-        patchMemory((void*)0x827f9fc, { 0x0f, 0x84 });
-
-        if (isTerminal) {
-            enableHook(touchPanelFix, 0x83C17E0);
-            enableHook(isTerminal, 0x80eeea0);
-        } else {
-            // local network disconnect fix
-            enableHook(84EC560, 0x84EC560);
-            enableHook(AA75120, 0xAA75120);
-            enableHook(A393BE0, 0xA393BE0);
-
-            // terminal check bypass
-            enableHook(updateTest, 0x84FA120);
-        }
-
-        // dont save billing = dont crash
-        enableHook(billingSave, 0x8401A70);
-
-        enableHook(sendAlthmand, 0xa851320);
-
-        enableHook(XOpenDisplay, 0x805504c);
-
-        enableHook(FFBIo_State_PowerOn, 0x80DFD50);
-        enableHook(FFBIo_State_PowerOff, 0x80DFCC0);
-
-        enableHook(open, 0x805508c);
-    }
+    // @Function int open(const char *file, int oflag, ...)
+    enableHook(open, 0x8058370);
+    // @Function void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
+    enableHook(glTexParameteri, 0x8058EA0);
+    
 
     if (isTerminal)
         ourPcb = 4;

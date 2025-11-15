@@ -99,11 +99,10 @@ defineHook(int, updateSysMonitorMt5dxp, int a1, int a2) {
 }
 
 void initSysMonitor() {
-    if (isMt4) {
-        enableHook(updateSysMonitorMt4, 0x80A9B70);
-    } else {
-        enableHook(updateSysMonitorMt5dxp, 0x8288040);
-    }
+
+    // @Function void Sys::Network::Impl::updateState(Sys::Network::Impl *const this, StateArray *const state_array)
+    enableHook(updateSysMonitorMt4, 0x80ADEC0);
+    
 
     enableHook(mq_open, mq_open);
     enableHook(mq_getattr, mq_getattr);

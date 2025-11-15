@@ -79,37 +79,26 @@ void generateHaspDongleData(const std::string& serial)
 }
 
 void initHasp() {
-    if (isMt4) {
 
-        if (isTerminal) {
-            generateHaspDongleData("267611069420"); // terminal
-        } else {
-            generateHaspDongleData("267610069420"); // drive
-        }
-
-        enableHook(hasp_login, 0x8921FD0);
-        enableHook(hasp_get_size, 0x8922F60);
-        enableHook(hasp_encrypt, 0x892215C);
-
-        enableHook(hasp_logout, 0x89281f4);
-        enableHook(hasp_decrypt, 0x8922248);
-        enableHook(hasp_read, 0x8922DC8);
-        enableHook(hasp_write, 0x8922E94);
-
+    if (isTerminal) {
+        generateHaspDongleData("267621990001"); // use test pcb serial
     } else {
-
-        if (isTerminal) {
-            generateHaspDongleData("267621542069"); // terminal
-        } else {
-            generateHaspDongleData("267620542069"); // drive
-        }
-
-        enableHook(hasp_login, 0xa982740);
-        enableHook(hasp_logout, 0xa9827e0);
-        enableHook(hasp_encrypt, 0xa9828cc);
-        enableHook(hasp_decrypt, 0xa9829b8);
-        enableHook(hasp_get_size, 0xa9836d0);
-        enableHook(hasp_read, 0xa983538);
-        enableHook(hasp_write, 0xa983604);
+        generateHaspDongleData("267620990001"); // drive, use test pcb serial
     }
+
+    // MT5
+    // @Function int hasp_login(int a1, void *src, int a3)
+    enableHook(hasp_login, 0x8C4EC00);
+    // @Function int hasp_get_size(int a1, int a2, int a3)
+    enableHook(hasp_get_size, 0x8C4FB90);
+    // @Function int hasp_encrypt(int a1, void *src, size_t n)
+    enableHook(hasp_encrypt, 0x8C4ED8C);
+    // @Function int hasp_logout(int a1)
+    enableHook(hasp_logout, 0x8C4ECA0);
+    // @Function int hasp_decrypt(int a1, void *src, size_t n)
+    enableHook(hasp_decrypt, 0x8C4EE78);
+    // @Function int hasp_read(int a1, int a2, int a3, int a4, int a5)
+    enableHook(hasp_read, 0x8C4F9F8);
+    // @Function int hasp_write(int a1, int a2, int a3, int a4, int a5)
+    enableHook(hasp_write, 0x8C4FAC4);
 }

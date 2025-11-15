@@ -119,8 +119,13 @@ defineHook(int, bngRwResetMt4, int a1, int cb, int d)
 defineHook(int, bngRwWaitTouchMt4, int a1, int a2, int a3, int cb, uint8_t* bn)
 {
     if (!cardEntered) { // super hacky solution plz fix me
-        *(int*)(bn + 12) = 0x836EDE0;
-        *(int*)(bn + 220) = *(int*)0x9213994; // dont timeout
+
+        // @Function bool Sys::Device::IcCard::impl::state_ReqWaitTouch(Sys::Device::IcCard::impl *const this)
+        *(int*)(bn + 12) = 0x83BF260; 
+
+        // @Function void Sys::Utility::FrameTimer::Initialize()
+        // -> Sym_ZN3Sys7Utility10FrameTimer14sGlobalCounterE 
+        *(int*)(bn + 220) = *(int*)0x99299C8; // dont timeout
         return 0;
     }
     printf("bngRwWaitTouch %p\n", (void *)bn);
@@ -132,23 +137,17 @@ defineHook(int, bngRwWaitTouchMt4, int a1, int a2, int a3, int cb, uint8_t* bn)
 }
 
 void initBana() {
-    if (isMt4) {
-        enableHook(bngRwAttachMt4, 0x8AC3ECC);
-        enableHook(bngRwResetMt4, 0x8AC39B0);
-        enableHook(bngRwReqLedMt4, 0x8AC3774);
-        enableHook(bngRwWaitTouchMt4, 0x8AC387E);
-    } else {
-        enableHook(BngRwInit, 0xAA62C34);
-        enableHook(BngRwAttach, 0xAA62764);
-        enableHook(BngRwIsCmdExec, 0x80EAD50);
-        enableHook(BngRwReqLed, 0xAA6200C);
-        enableHook(BngRwReqAction, 0xAA61DE6);
-        enableHook(BngRwReqBeep, 0xAA61EEC);
-        enableHook(BngRwReqCancel, 0xAA61A1A);
-        enableHook(BngRwReqSendUrlTo, 0xAA6236E);
-        enableHook(BngRwReqWaitTouch, 0xAA62116);
-        enableHook(BngRwReset, 0x0aa62248);
-    }
+    
+    // MT5
+    // @Function int BngRwAttach(unsigned int a1, char *src, int a3, int a4, int a5, int a6)
+    enableHook(bngRwAttachMt4, 0x8E0826C);
+    // @Function int BngRwDevReset(unsigned int a1, int a2, int a3)
+    enableHook(bngRwResetMt4, 0x8E07D50);
+    // @Function int BngRwReqLed(unsigned int a1, unsigned int a2, int a3, int a4)
+    enableHook(bngRwReqLedMt4, 0x8E07B14);
+    // @Function int BngRwReqWaitTouch(unsigned int a1, int a2, int a3, int a4, int a5)
+    enableHook(bngRwWaitTouchMt4, 0x8E07C1E);
+
 
     g_cardData = new CardData();
     if (accessCode)

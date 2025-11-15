@@ -42,13 +42,10 @@ defineHook(void*, SSLv23_method) {
 }
 
 void disableSSLCert() {
-    if (isMt4) {
-        enableHook(SSL_CTX_set_verify, 0x8059628);
-        enableHook(curl_easy_setopt, 0x8059C78);
-        enableHook(SSLv23_method, 0x8058718);
-    } else {
-        enableHook(SSL_CTX_set_verify, 0x80576BC);
-        enableHook(curl_easy_setopt, 0x80560EC);
-        enableHook(SSLv2totls, 0xA764E00);
-    }
+    
+    // Just like what it said
+    enableHook(SSL_CTX_set_verify, 0x8059D80);
+    enableHook(curl_easy_setopt, 0x805A430);
+    enableHook(SSLv23_method, 0x8058E00);
+    
 }

@@ -52,11 +52,10 @@ defineHook(void, initGlx, int* a1) {
 }
 
 void init_limiter() {
-    if (isMt4) {
-        enableHook(initGlx, 0x89BA530);
-    } else {
-        enableHook(initGlx, 0xa826310);
-    }
+
+    // @Function void (*__cdecl NU::System::nuGlxContext::Initialize(NU::System::nuGlxContext *this))(void)
+    enableHook(initGlx, 0x8CF2490);
+
 
     targetFrameTime = 1000000000 / 60;
 }

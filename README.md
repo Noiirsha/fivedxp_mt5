@@ -1,6 +1,15 @@
 # fivedxp4mt5
 this branch is for mt5 exp (SVNR 12357)
 
+# additional library file
+NVIDIA Performance Analysis Kit (libNVPerfSDK.so.1)
+
+> x32
+> http://developer.download.nvidia.com/tools/NVPerfKit/6.0/NVPerfKit-Linux-x86-173.13.tar.gz
+
+> x64
+> http://developer.download.nvidia.com/tools/NVPerfKit/6.0/NVPerfKit-Linux-x86_64-173.13.tar.gz
+
 # Common Sense is REQUIRED
 ### if your still using config.json, you will need to change it to config.toml
 

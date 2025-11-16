@@ -570,6 +570,27 @@ defineHook(void, glTexParameteri, GLenum target, GLenum pname, GLenum param) {
 
 }
 
+// MT5: 
+/*
+@ Error log
+Texture Format Error
+[SYS] SysTextureLoadBankBase nBank [250] Error![-2]
+../src/APP/System/Sys_Utility.cpp(224) : Assertion failed
+
+@ Function
+int NU::Texture::NutHeader::CheckFileHeader(NU::Texture::NutHeader *this)
+
+this is very hacky way, and some of the texture is already abnormal
+not recommend to enable this hook
+please make sure to use gzip to unzip the file, and rename it to the original suffix.
+
+make sure all of the texture/models/data were fixed, then remove this hook.
+*/
+defineHook(int, NUTexture_CheckFileHeader, int a1) {
+    return 1; // 0 = failed
+}
+
+
 __attribute__((constructor))
 void initialize_wlldr() {
     if (!loadConfig())
@@ -626,7 +647,7 @@ void initialize_wlldr() {
 
     // content router fix
     // @Function bool Sys::Net::Interface::update(Sys::Net::Interface *const this)
-    enableHook(refreshNetwork, 0x821D4F0);
+    enableHook(refreshNetwork, 0x825BA60);
 
     // im not very sure about this function... maybe prevent it call the error handling branch?
     // @Function void Sys::Network::Impl::updateInterface(Sys::Network::Impl *const this)
@@ -651,7 +672,10 @@ void initialize_wlldr() {
     // @Function int open(const char *file, int oflag, ...)
     enableHook(open, 0x8058370);
     // @Function void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
-    enableHook(glTexParameteri, 0x8058EA0);
+    // enableHook(glTexParameteri, 0x8058EA0);
+
+    // MT5 Additional 
+    // enableHook(NUTexture_CheckFileHeader, 0x8CFB2B0);
     
 
     if (isTerminal)
